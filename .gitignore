@@ -1,0 +1,3 @@
+node_modules
+dist
+.ignored_node_modules

@@ -1,0 +1,48 @@
+{
+  "name": "hook-store-bridge",
+  "version": "1.0.0",
+  "description": "A utility to bridge React hook state into Zustand or other state management libraries.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "tsdown --watch",
+    "build": "tsdown",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "check": "biome check --write --unsafe ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.15.1",
+  "devDependencies": {
+    "@biomejs/biome": "2.2.2",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.3.0",
+    "@types/node": "^24.3.1",
+    "@types/react": "^19.1.12",
+    "@vitejs/plugin-react": "^5.0.2",
+    "@vitest/ui": "^3.2.4",
+    "jsdom": "^26.1.0",
+    "react-dom": "^19.1.1",
+    "tsdown": "^0.14.2",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.4",
+    "vitest": "^3.2.4"
+  },
+  "peerDependencies": {
+    "react": "^19.1.1",
+    "zustand": "^5.0.8"
+  }
+}
