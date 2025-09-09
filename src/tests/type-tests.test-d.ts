@@ -1,6 +1,6 @@
 /** biome-ignore-all lint/correctness/noUnusedFunctionParameters: test-file */
 import { expectTypeOf, test } from 'vitest'
-import { createHookAdapter } from './adapter'
+import { createHookAdapter } from '../adapter'
 
 // 简单计数器 hook 类型测试
 const useCounter = (initial: number) => {

@@ -1,7 +1,7 @@
 import { render, renderHook, screen } from '@testing-library/react'
-import React, { act } from 'react'
+import React, { act, useCallback } from 'react'
 import { describe, expect, it } from 'vitest'
-import { createHookAdapter } from './adapter'
+import { createHookAdapter } from '../adapter'
 
 // A simple mock hook for testing the error case
 
@@ -92,5 +92,51 @@ describe('createHookAdapter', () => {
 
     expect(testElement.textContent).toBe('Test: false')
     expect(obj1Element.textContent).toBe('Obj1 count: 5')
+  })
+
+  it('action改变', () => {
+    const useMockHook = (initialValue: number) => {
+      const [count, setCount] = React.useState(initialValue)
+      const increment = useCallback(() => {
+        setCount(count + 1)
+      }, [count])
+      return { count, setCount, increment }
+    }
+
+    const [useAdaptedStore, StoreProvider] = createHookAdapter(
+      useMockHook,
+      ['count'],
+      ['increment'],
+    )
+    const TestComponent = () => {
+      const { store, increment } = useAdaptedStore()
+      const count = store.use.count()
+      return (
+        <div>
+          <span>Count: {count}</span>
+          <button type='button' onClick={() => increment()}>
+            Increment
+          </button>
+        </div>
+      )
+    }
+    render(
+      <StoreProvider hookArgs={[5]}>
+        <TestComponent />
+      </StoreProvider>,
+    )
+
+    const countElement = screen.getByText(/Count:/)
+
+    expect(countElement.textContent).toBe('Count: 5')
+    const button = screen.getByText('Increment')
+
+    act(() => {
+      button.click()
+    })
+    act(() => {
+      button.click()
+    })
+    expect(countElement.textContent).toBe('Count: 7')
   })
 })

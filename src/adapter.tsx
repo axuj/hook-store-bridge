@@ -42,9 +42,11 @@ export function createHookAdapter<
     if (storeRef.current === null) {
       storeRef.current = {
         store: createStoreFunc(states),
-        actions: pick(hookValue, actionKeys),
+        actions: {} as ActionsType,
       }
     }
+
+    storeRef.current.actions = pick(hookValue, actionKeys)
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: 只需要监听dependencies
     useEffect(() => {

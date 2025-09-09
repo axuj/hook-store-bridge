@@ -18,7 +18,7 @@
   "scripts": {
     "dev": "tsdown --watch",
     "build": "tsdown",
-    "test": "vitest",
+    "test": "vitest --typecheck",
     "test:ui": "vitest --ui",
     "check": "biome check --write --unsafe ."
   },
@@ -41,7 +41,7 @@
   },
   "peerDependencies": {
     "react": "^19.0.0",
-    "zustand": "^5.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "zustand": "^5.0.0"
   }
 }
