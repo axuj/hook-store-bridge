@@ -23,10 +23,29 @@
     "check": "biome check --write --unsafe .",
     "dev:example": "cd ./examples/react-router-app && pnpm run dev"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "react",
+    "hook",
+    "state",
+    "zustand",
+    "context",
+    "prop-drilling",
+    "state-management",
+    "bridge",
+    "adapter",
+    "ai",
+    "chat"
+  ],
   "license": "ISC",
   "packageManager": "pnpm@10.15.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/axuj/hook-store-bridge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/axuj/hook-store-bridge/issues"
+  },
+  "homepage": "https://github.com/axuj/hook-store-bridge#readme",
   "devDependencies": {
     "@biomejs/biome": "2.1.4",
     "@testing-library/jest-dom": "^6.8.0",

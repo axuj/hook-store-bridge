@@ -1,0 +1,67 @@
+# 工作流的名称
+name: Publish to npm with pnpm
+
+# 触发工作流的条件
+on:
+  release:
+    types: [created]
+
+# 工作流执行的任务
+jobs:
+  build-and-publish:
+    # 任务运行的虚拟机环境
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 第一步：检出仓库代码
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 第二步：安装 pnpm
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          # 指定你项目使用的 pnpm 版本
+          version: 10.15.1
+
+      # 第三步：设置 Node.js 环境 (在 pnpm 之后)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.0'
+          # 关键：为 pnpm 设置缓存
+          cache: 'pnpm'
+
+      # 第四步：安装依赖
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # 第五步：校验版本号是否一致 (这一步无需任何改动)
+      - name: Check version match
+        run: |
+          TAG_VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')
+          echo "Git Tag Version: $TAG_VERSION"
+          
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          echo "Package.json Version: $PKG_VERSION"
+          
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "Error: Git tag version ($TAG_VERSION) does not match package.json version ($PKG_VERSION)."
+            exit 1
+          fi
+
+      # 第六步：构建项目 (如果需要)
+      - name: Build project
+        run: pnpm build
+
+      # 第七步：配置 npm Registry (为了发布)
+      - name: Configure npm registry
+        run: pnpm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+
+      # 第八步：发布到 npm
+      - name: Publish to npm
+        run: pnpm publish --no-git-checks
+        env:
+          # 这一行其实在 pnpm v7+ 中已经不是必需的了，因为上面的 config set 已经完成了认证
+          # 但保留它也无害，可以兼容旧版本
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

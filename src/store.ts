@@ -1,6 +1,5 @@
 import { createStore, type StoreApi } from 'zustand'
-import type { WithSelectors } from './util'
-import { createSelectors } from './util'
+import { createSelectors, type WithSelectors } from './util'
 
 export interface StoreConfig<Store, State> {
   createStore: (initState: State) => Store
@@ -9,23 +8,15 @@ export interface StoreConfig<Store, State> {
 
 export const createDefaultZustandStoreOptions = <
   State extends Record<string, unknown>,
->() => {
-  return createDefaultStore<WithSelectors<StoreApi<State>>, State>({
-    createStore: (initState) => {
-      const store = createStore<State>(() => ({
-        ...initState,
-      }))
-      return createSelectors(store)
-    },
+>(): StoreConfig<WithSelectors<StoreApi<State>>, State> => ({
+  createStore: (initState) => {
+    const store = createStore<State>(() => ({
+      ...initState,
+    }))
+    return createSelectors(store)
+  },
 
-    updateState: (store, newState) => {
-      store.setState(newState)
-    },
-  })
-}
-
-export function createDefaultStore<Store, State>(
-  config: StoreConfig<Store, State>,
-) {
-  return config
-}
+  updateState: (store, newState) => {
+    store.setState(newState)
+  },
+})

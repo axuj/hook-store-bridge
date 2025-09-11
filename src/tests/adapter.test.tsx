@@ -238,15 +238,15 @@ describe('createHookBridge', () => {
 
     const { useAdaptedStore, StoreProvider } = createHookBridge({
       useHook: useMockCounter,
-      stateKeys: ['count'],
+      stateKeys: ['count'] as const,
       actionKeys: ['setCount'],
 
       createStoreConfig: () => ({
         createStore: (initState) => {
-          return createStore<State>((_set) => ({
+          return createStore<State>()((set) => ({
             ...initState,
             count1: 0,
-            increment1: () => _set((state) => ({ count1: state.count1 + 1 })),
+            increment1: () => set((state) => ({ count1: state.count1 + 1 })),
           }))
         },
         updateState: (store, state) => {

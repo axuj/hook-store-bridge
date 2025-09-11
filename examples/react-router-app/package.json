@@ -27,6 +27,7 @@
     "clsx": "^2.1.1",
     "embla-carousel-react": "^8.6.0",
     "hook-store-bridge": "workspace:*",
+    "isbot": "^5",
     "lucide-react": "^0.543.0",
     "nanoid": "^5.1.5",
     "react": "^19.1.0",
