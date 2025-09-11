@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { act, useEffect, useState } from 'react'
 import { describe, expect, it } from 'vitest'
-import { createHookAdapter } from '../adapter'
+import { createHookBridge } from '../bridge'
 
 describe('Component Rendering and State Updates', () => {
   it('should render components with correct initial state and update independently', () => {
@@ -40,14 +40,14 @@ describe('Component Rendering and State Updates', () => {
       }
     }
 
-    // 使用 createHookAdapter 创建适配器
-    const [useAdaptedStore, StoreProvider] = createHookAdapter(
-      useCounter,
-      ['count1', 'count2', 'count3', 'count4'],
-      ['setCount1', 'setCount2', 'setCount3', 'setCount4'],
-    )
+    // 使用 createHookBridge 创建适配器
+    const { useAdaptedStore, StoreProvider } = createHookBridge({
+      useHook: useCounter,
+      stateKeys: ['count1', 'count2', 'count3', 'count4'],
+      actionKeys: ['setCount1', 'setCount2', 'setCount3', 'setCount4'],
+    })
 
-    const CountComponent = ({
+    function CountComponent({
       count,
       setCount,
       componentName,
@@ -55,7 +55,7 @@ describe('Component Rendering and State Updates', () => {
       count: number
       setCount: (c: number) => void
       componentName: string
-    }) => {
+    }) {
       useEffect(() => {
         reader(componentName)
       })

@@ -13,7 +13,10 @@
       "!dist/**/*",
       "!.ignored_node_modules/**/*",
       "!**/build/**/*",
-      "!**/.react-router/**/*"
+      "!**/.react-router/**/*",
+
+      "!**/components/ui/**/*",
+      "!**/components/ai-elements/**/*"
     ]
   },
   "formatter": {

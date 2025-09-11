@@ -1,1 +1,2 @@
-export { createHookAdapter } from './adapter'
+export { createHookBridge } from './bridge'
+export { createDefaultStore } from './store'
