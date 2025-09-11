@@ -241,7 +241,7 @@ Custom store configurations are useful when you need to:
 
 Once you've created a bridge with a custom store configuration, you can access your custom properties and actions just like the original hook properties:
 
-```tsx
+```
 import { useAdaptedStore } from './chatStoreBridge'
 
 function MyComponent() {
@@ -265,3 +265,7 @@ function MyComponent() {
 Check out the [examples](./examples) directory for complete working examples:
 - [Next.js App](./examples/next-app)
 - [React Router App](./examples/react-router-app)
+
+## License
+
+This project is licensed under the ISC License - see the [LICENSE](./LICENSE) file for details.
