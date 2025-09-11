@@ -20,7 +20,8 @@
     "build": "tsdown",
     "test": "vitest --typecheck",
     "test:ui": "vitest --ui",
-    "check": "biome check --write --unsafe ."
+    "check": "biome check --write --unsafe .",
+    "dev:example": "cd ./examples/react-router-app && pnpm run dev"
   },
   "keywords": [],
   "author": "",
