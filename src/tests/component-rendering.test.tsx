@@ -41,10 +41,39 @@ describe('Component Rendering and State Updates', () => {
     }
 
     // 使用 createHookBridge 创建适配器
-    const { useAdaptedStore, StoreProvider } = createHookBridge({
-      useHook: useCounter,
-      stateKeys: ['count1', 'count2', 'count3', 'count4'],
-      actionKeys: ['setCount1', 'setCount2', 'setCount3', 'setCount4'],
+    const { useBridgedStore, StoreProvider } = createHookBridge({
+      useStoreLogic: ({
+        count1InitialValue,
+        count2InitialValue,
+        count3InitialValue,
+        count4InitialValue,
+      }: {
+        count1InitialValue: number
+        count2InitialValue: number
+        count3InitialValue: number
+        count4InitialValue: number
+      }) => {
+        const {
+          count1,
+          count2,
+          count3,
+          count4,
+          setCount1,
+          setCount2,
+          setCount3,
+          setCount4,
+        } = useCounter({
+          count1InitialValue,
+          count2InitialValue,
+          count3InitialValue,
+          count4InitialValue,
+        })
+
+        return {
+          tracked: { count1, count2, count3, count4 },
+          methods: { setCount1, setCount2, setCount3, setCount4 },
+        }
+      },
     })
 
     function CountComponent({
@@ -76,7 +105,7 @@ describe('Component Rendering and State Updates', () => {
     }
 
     function CountComponent1() {
-      const { store, setCount1 } = useAdaptedStore()
+      const { store, setCount1 } = useBridgedStore()
       const count = store.use.count1()
       return (
         <CountComponent
@@ -88,7 +117,7 @@ describe('Component Rendering and State Updates', () => {
     }
 
     function CountComponent2() {
-      const { store, setCount2 } = useAdaptedStore()
+      const { store, setCount2 } = useBridgedStore()
       const count = store.use.count2()
       return (
         <CountComponent
@@ -99,7 +128,7 @@ describe('Component Rendering and State Updates', () => {
       )
     }
     function CountComponent3() {
-      const { store } = useAdaptedStore()
+      const { store } = useBridgedStore()
       const count = store.use.count3()
       function setCount3(c: number) {
         store.setState({ count3: c })
@@ -114,7 +143,7 @@ describe('Component Rendering and State Updates', () => {
     }
 
     function CountComponent4() {
-      const { store, setCount4 } = useAdaptedStore()
+      const { store, setCount4 } = useBridgedStore()
       const count = store.use.count2()
       return (
         <CountComponent
@@ -139,7 +168,7 @@ describe('Component Rendering and State Updates', () => {
     // 渲染组件
     render(
       <StoreProvider
-        hookArgs={[
+        logicArgs={[
           {
             count1InitialValue: 1,
             count2InitialValue: 2,

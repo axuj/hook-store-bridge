@@ -1,1 +1,1 @@
-export { createHookBridge } from './bridge'
+export * from './bridge'

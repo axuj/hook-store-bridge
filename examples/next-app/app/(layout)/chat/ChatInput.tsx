@@ -22,10 +22,10 @@ import {
   PromptInputTools,
 } from '~/components/ai-elements/prompt-input'
 import { models } from './data'
-import { useAdaptedStore } from './storeBridge'
+import { useBridgedStore } from './storeBridge'
 
 export const ChatInput = () => {
-  const { store, setModel, sendMessage } = useAdaptedStore()
+  const { store, setModel, sendMessage } = useBridgedStore()
   const model = store.use.model()
   const status = store.use.status()
 

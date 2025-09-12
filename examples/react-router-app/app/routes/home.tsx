@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from 'react'
 import { CountsProvider, useContextCounts } from '~/routes/+count/count-context'
 import { Counter } from '~/routes/+count/counter'
-import { StoreProvider, useAdaptedStore } from '~/routes/+count/storeBridge'
+import { StoreProvider, useBridgedStore } from '~/routes/+count/storeBridge'
 
 export function meta() {
   return [
@@ -11,24 +11,25 @@ export function meta() {
 }
 
 function Count() {
-  const { store, setCount } = useAdaptedStore()
+  const { store, setCount } = useBridgedStore()
   const count = store.use.count()
   return <Counter count={count} setCount={setCount} />
 }
 
 function Count1() {
-  const { store, setCount1 } = useAdaptedStore()
+  const { store, setCount1 } = useBridgedStore()
   const count = store.use.count1()
   return <Counter count={count} setCount={setCount1} />
 }
 function Count2() {
-  const { store, setCount2 } = useAdaptedStore()
+  const { store, setCount2 } = useBridgedStore()
   const count = store.use.count2()
   return <Counter count={count} setCount={setCount2} />
 }
 function Count3() {
-  const { store, setCount3 } = useAdaptedStore()
+  const { store, setCount3 } = useBridgedStore()
   const count = store.use.count3()
+
   return <Counter count={count} setCount={setCount3} />
 }
 

@@ -9,10 +9,10 @@ import {
 } from '~/components/ai-elements/message'
 import { Response } from '~/components/ai-elements/response'
 
-import { useAdaptedStore } from './storeBridge'
+import { useBridgedStore } from './storeBridge'
 
 export const ChatMessages = () => {
-  const { store } = useAdaptedStore()
+  const { store } = useBridgedStore()
   const messages = store.use.messages()
   return (
     <>

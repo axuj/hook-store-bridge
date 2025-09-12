@@ -16,13 +16,17 @@ describe('createHookBridge 类型测试', () => {
       }
     }
 
-    const { useAdaptedStore: useCounterStore } = createHookBridge({
-      useHook: useCounter,
-      stateKeys: ['count'],
-      actionKeys: ['increment', 'decrement'],
+    const { useBridgedStore: useCounterStore } = createHookBridge({
+      useStoreLogic: (initial: number) => {
+        const { count, increment, decrement } = useCounter(initial)
+        return {
+          tracked: { count },
+          methods: { increment, decrement },
+        }
+      },
     })
 
-    expectTypeOf(useCounterStore).returns.toExtend<{
+    expectTypeOf(useCounterStore).returns.toMatchTypeOf<{
       store: {
         use: {
           count: () => number
@@ -46,13 +50,17 @@ describe('createHookBridge 类型测试', () => {
     }
 
     const { StoreProvider: CounterProvider } = createHookBridge({
-      useHook: useCounter,
-      stateKeys: ['count'],
-      actionKeys: ['increment', 'decrement'],
+      useStoreLogic: (initial: number) => {
+        const { count, increment, decrement } = useCounter(initial)
+        return {
+          tracked: { count },
+          methods: { increment, decrement },
+        }
+      },
     })
 
-    expectTypeOf(CounterProvider).parameter(0).toExtend<{
-      hookArgs?: [number]
+    expectTypeOf(CounterProvider).parameter(0).toMatchTypeOf<{
+      logicArgs?: [number]
       children: any
     }>()
   })
@@ -71,13 +79,18 @@ describe('createHookBridge 类型测试', () => {
       }
     }
 
-    const { useAdaptedStore: useComplexStore } = createHookBridge({
-      useHook: useComplexHook,
-      stateKeys: ['count', 'name', 'items'] as const,
-      actionKeys: ['updateCount', 'updateName', 'addItem', 'reset'] as const,
+    const { useBridgedStore: useComplexStore } = createHookBridge({
+      useStoreLogic: (config: { initialCount: number; name: string }) => {
+        const { count, name, items, updateCount, updateName, addItem, reset } =
+          useComplexHook(config)
+        return {
+          tracked: { count, name, items },
+          methods: { updateCount, updateName, addItem, reset },
+        }
+      },
     })
 
-    expectTypeOf(useComplexStore).returns.toExtend<{
+    expectTypeOf(useComplexStore).returns.toMatchTypeOf<{
       store: {
         use: {
           count: () => number
@@ -107,13 +120,18 @@ describe('createHookBridge 类型测试', () => {
     }
 
     const { StoreProvider: ComplexProvider } = createHookBridge({
-      useHook: useComplexHook,
-      stateKeys: ['count', 'name', 'items'] as const,
-      actionKeys: ['updateCount', 'updateName', 'addItem', 'reset'] as const,
+      useStoreLogic: (config: { initialCount: number; name: string }) => {
+        const { count, name, items, updateCount, updateName, addItem, reset } =
+          useComplexHook(config)
+        return {
+          tracked: { count, name, items },
+          methods: { updateCount, updateName, addItem, reset },
+        }
+      },
     })
 
-    expectTypeOf(ComplexProvider).parameter(0).toExtend<{
-      hookArgs?: [{ initialCount: number; name: string }]
+    expectTypeOf(ComplexProvider).parameter(0).toMatchTypeOf<{
+      logicArgs?: [{ initialCount: number; name: string }]
     }>()
   })
 
@@ -123,18 +141,24 @@ describe('createHookBridge 类型测试', () => {
       return { count, setCount }
     }
 
-    type State = Pick<ReturnType<typeof useMockCounter>, 'count'> & {
-      count1: number
-      increment1: () => void
-    }
+    type State = Pick<ReturnType<typeof useMockCounter>, 'count'>
 
-    const { useAdaptedStore } = createHookBridge({
-      useHook: useMockCounter,
-      stateKeys: ['count'],
-      actionKeys: ['setCount'],
+    const { useBridgedStore } = createHookBridge({
+      useStoreLogic: (initialValue: number) => {
+        const { count, setCount } = useMockCounter(initialValue)
+        return {
+          tracked: { count },
+          methods: { setCount },
+        }
+      },
       createStoreConfig: () => ({
         createStore: (initState) => {
-          return createStore<State>((_set) => ({
+          return createStore<
+            State & {
+              count1: number
+              increment1: () => void
+            }
+          >((_set) => ({
             ...initState,
             count1: 0,
             increment1: () => _set((state) => ({ count1: state.count1 + 1 })),
@@ -146,8 +170,13 @@ describe('createHookBridge 类型测试', () => {
       }),
     })
 
-    expectTypeOf(useAdaptedStore).returns.toExtend<{
-      store: StoreApi<State>
+    expectTypeOf(useBridgedStore).returns.toMatchTypeOf<{
+      store: StoreApi<
+        State & {
+          count1: number
+          increment1: () => void
+        }
+      >
       setCount: Dispatch<React.SetStateAction<number>>
     }>()
   })

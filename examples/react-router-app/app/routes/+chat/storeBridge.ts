@@ -4,12 +4,13 @@ import { useState } from 'react'
 
 function useMyChat() {
   const [model, setModel] = useState<string>('gpt-4')
-
-  return { ...useChat(), model, setModel }
+  const { messages, error, status, stop, sendMessage } = useChat()
+  return {
+    tracked: { messages, error, status, model },
+    methods: { sendMessage, stop, setModel },
+  }
 }
 
-export const { useAdaptedStore, StoreProvider } = createHookBridge({
-  useHook: useMyChat,
-  stateKeys: ['messages', 'error', 'model', 'status'],
-  actionKeys: ['stop', 'sendMessage', 'setModel'],
+export const { useBridgedStore, StoreProvider } = createHookBridge({
+  useStoreLogic: useMyChat,
 })

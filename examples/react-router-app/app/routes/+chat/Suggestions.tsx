@@ -3,10 +3,10 @@ import {
   Suggestions as SuggestionsContainer,
 } from '~/components/ai-elements/suggestion'
 import { suggestions } from './data'
-import { useAdaptedStore } from './storeBridge'
+import { useBridgedStore } from './storeBridge'
 
 export const ChatSuggestions = () => {
-  const { store, sendMessage } = useAdaptedStore()
+  const { store, sendMessage } = useBridgedStore()
   const status = store.use.status()
 
   return (

@@ -2,19 +2,21 @@ import { render, renderHook, screen } from '@testing-library/react'
 import { act, useCallback, useState } from 'react'
 import { describe, expect, it } from 'vitest'
 import { createStore, useStore } from 'zustand'
+import { devtools } from 'zustand/middleware'
 import { createHookBridge } from '../bridge'
 
 describe('createHookBridge', () => {
   it('should throw an error if useAdaptedStore is used without a Provider', () => {
     const useMockHook = () => ({ value: 123 })
-    const { useAdaptedStore } = createHookBridge({
-      useHook: useMockHook,
-      stateKeys: ['value'],
+    const { useBridgedStore } = createHookBridge({
+      useStoreLogic: () => ({
+        tracked: { ...useMockHook() },
+      }),
     })
 
     expect(() => {
-      renderHook(() => useAdaptedStore())
-    }).toThrow('`useAdaptedStore` must be used within a `StoreProvider`.')
+      renderHook(() => useBridgedStore())
+    }).toThrow('`useBridgedStore` must be used within a `StoreProvider`.')
   })
 
   it('should provide state and actions correctly when used with a Provider', async () => {
@@ -22,13 +24,17 @@ describe('createHookBridge', () => {
       const [count, setCount] = useState(initialValue)
       return { count, setCount }
     }
-    const { useAdaptedStore, StoreProvider } = createHookBridge({
-      useHook: useMockCounter,
-      stateKeys: ['count'],
-      actionKeys: ['setCount'],
+    const { useBridgedStore, StoreProvider } = createHookBridge({
+      useStoreLogic: (initialValue: number) => {
+        const { count, setCount } = useMockCounter(initialValue)
+        return {
+          tracked: { count },
+          methods: { setCount },
+        }
+      },
     })
     const TestComponent = () => {
-      const { store, setCount } = useAdaptedStore()
+      const { store, setCount } = useBridgedStore()
       const count = store.use.count()
       return (
         <div>
@@ -40,7 +46,7 @@ describe('createHookBridge', () => {
       )
     }
     render(
-      <StoreProvider hookArgs={[5]}>
+      <StoreProvider logicArgs={[5]}>
         <TestComponent />
       </StoreProvider>,
     )
@@ -67,12 +73,25 @@ describe('createHookBridge', () => {
       test,
     })
 
-    const { useAdaptedStore, StoreProvider } = createHookBridge({
-      useHook: useMockHook,
-      stateKeys: ['obj1', 'test'],
+    const { useBridgedStore, StoreProvider } = createHookBridge({
+      useStoreLogic: (
+        obj1Initialize: { count: number },
+        obj2Initialize: { count: number },
+        test: boolean = false,
+      ) => {
+        const { obj1, test: testVal } = useMockHook(
+          obj1Initialize,
+          obj2Initialize,
+          test,
+        )
+        return {
+          tracked: { obj1, test: testVal },
+          methods: {},
+        }
+      },
     })
     const TestComponent = () => {
-      const { store } = useAdaptedStore()
+      const { store } = useBridgedStore()
       const test = store.use.test()
       const obj1 = store.use.obj1().count
       return (
@@ -83,7 +102,7 @@ describe('createHookBridge', () => {
       )
     }
     render(
-      <StoreProvider hookArgs={[{ count: 5 }, { count: 10 }]}>
+      <StoreProvider logicArgs={[{ count: 5 }, { count: 10 }]}>
         <TestComponent />
       </StoreProvider>,
     )
@@ -102,12 +121,17 @@ describe('createHookBridge', () => {
       }
     }
 
-    const { useAdaptedStore, StoreProvider } = createHookBridge({
-      useHook: useMockHook,
-      stateKeys: ['test'],
+    const { useBridgedStore, StoreProvider } = createHookBridge({
+      useStoreLogic: () => {
+        const { test } = useMockHook()
+        return {
+          tracked: { test },
+          methods: {},
+        }
+      },
     })
     const TestComponent = () => {
-      const { store } = useAdaptedStore()
+      const { store } = useBridgedStore()
       const test = store.use.test()
       return (
         <div>
@@ -133,13 +157,17 @@ describe('createHookBridge', () => {
       return { count, setCount, increment }
     }
 
-    const { useAdaptedStore, StoreProvider } = createHookBridge({
-      useHook: useMockHook,
-      stateKeys: ['count'],
-      actionKeys: ['increment'],
+    const { useBridgedStore, StoreProvider } = createHookBridge({
+      useStoreLogic: (initialValue: number) => {
+        const { count, setCount, increment } = useMockHook(initialValue)
+        return {
+          tracked: { count },
+          methods: { setCount, increment },
+        }
+      },
     })
     const TestComponent = () => {
-      const { store, increment } = useAdaptedStore()
+      const { store, increment } = useBridgedStore()
       const count = store.use.count()
       return (
         <div>
@@ -151,7 +179,7 @@ describe('createHookBridge', () => {
       )
     }
     render(
-      <StoreProvider hookArgs={[5]}>
+      <StoreProvider logicArgs={[5]}>
         <TestComponent />
       </StoreProvider>,
     )
@@ -175,13 +203,18 @@ describe('createHookBridge', () => {
       return { count: initialValue + 1 }
     }
 
-    const { useAdaptedStore, StoreProvider } = createHookBridge({
-      useHook: useMockHook,
-      stateKeys: ['count'],
+    const { useBridgedStore, StoreProvider } = createHookBridge({
+      useStoreLogic: (initialValue: number) => {
+        const { count } = useMockHook(initialValue)
+        return {
+          tracked: { count },
+          methods: {},
+        }
+      },
     })
 
     const TestComponent = ({ initialValue }: { initialValue: number }) => {
-      const { store } = useAdaptedStore()
+      const { store } = useBridgedStore()
       const count = store.use.count()
       return (
         <div>
@@ -199,7 +232,7 @@ describe('createHookBridge', () => {
           <button type='button' onClick={() => setInitialValue(10)}>
             Change Initial Value
           </button>
-          <StoreProvider hookArgs={[initialValue]}>
+          <StoreProvider logicArgs={[initialValue]}>
             <TestComponent initialValue={initialValue} />
           </StoreProvider>
         </>
@@ -236,26 +269,35 @@ describe('createHookBridge', () => {
       increment1: () => void
     }
 
-    const { useAdaptedStore, StoreProvider } = createHookBridge({
-      useHook: useMockCounter,
-      stateKeys: ['count'] as const,
-      actionKeys: ['setCount'],
-
+    const { useBridgedStore, StoreProvider } = createHookBridge({
+      useStoreLogic: (initialValue: number) => {
+        const { count, setCount } = useMockCounter(initialValue)
+        return {
+          tracked: { count },
+          methods: { setCount },
+        }
+      },
       createStoreConfig: () => ({
         createStore: (initState) => {
-          return createStore<State>()((set) => ({
-            ...initState,
-            count1: 0,
-            increment1: () => set((state) => ({ count1: state.count1 + 1 })),
-          }))
+          return createStore<State>()(
+            devtools(
+              (set) => ({
+                ...initState,
+                count1: 0,
+                increment1: () =>
+                  set((state) => ({ count1: state.count1 + 1 })),
+              }),
+              { name: 'MyStore' },
+            ),
+          )
         },
         updateState: (store, state) => {
-          store.setState(state)
+          store.setState(state, false, 'hookStateUpdate')
         },
       }),
     })
     const TestComponent = () => {
-      const { store, setCount } = useAdaptedStore()
+      const { store, setCount } = useBridgedStore()
       const count = useStore(store, (s) => s.count)
       const count1 = useStore(store, (s) => s.count1)
       const increment1 = useStore(store, (s) => s.increment1)
@@ -273,7 +315,7 @@ describe('createHookBridge', () => {
       )
     }
     render(
-      <StoreProvider hookArgs={[5]}>
+      <StoreProvider logicArgs={[5]}>
         <TestComponent />
       </StoreProvider>,
     )
