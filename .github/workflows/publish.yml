@@ -3,8 +3,9 @@ name: Publish to npm with pnpm
 
 # 触发工作流的条件
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      - v*
 
 # 工作流执行的任务
 jobs:
@@ -16,6 +17,8 @@ jobs:
       # 第一步：检出仓库代码
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # 第二步：安装 pnpm
       - name: Set up pnpm
@@ -65,3 +68,9 @@ jobs:
           # 这一行其实在 pnpm v7+ 中已经不是必需的了，因为上面的 config set 已经完成了认证
           # 但保留它也无害，可以兼容旧版本
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # 第九步：生成 changelog
+      - run: pnpm dlx changelogithub --no-group
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
