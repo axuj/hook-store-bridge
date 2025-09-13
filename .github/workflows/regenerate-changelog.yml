@@ -12,11 +12,16 @@ on:
         required: true
         type: string
 
+# 权限
+permissions:
+  contents: write
+
+
 jobs:
   regenerate:
     runs-on: ubuntu-latest
     steps:
-      # 步骤 1: 检出代码
+      # 检出代码
       # 确保检出的是你手动输入的那个特定的标签
       - name: Checkout specific tag
         uses: actions/checkout@v4
@@ -26,7 +31,7 @@ jobs:
           # 检出你通过输入框传入的标签
           ref: ${{ github.event.inputs.tagName }}
 
-      # 步骤 2: (可选) 安装 Node.js 和 pnpm
+      # 安装 Node.js 和 pnpm
       # 如果你的 changelog 生成依赖于项目中的某些开发依赖，则需要此步骤
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
@@ -39,11 +44,9 @@ jobs:
           node-version: '22.13.0'
           cache: 'pnpm'
       
-      # 如果 changelogithub 是项目的 devDependency，你可能需要安装它
-      # - name: Install dependencies
-      #   run: pnpm install --frozen-lockfile
 
-      # 步骤 3: 重新生成 Changelog
+
+      # 重新生成 Changelog
       # 这一步会为当前检出的标签（即你输入的标签）创建或更新 GitHub Release
       - name: Generate changelog
         run: pnpm dlx changelogithub --no-group
