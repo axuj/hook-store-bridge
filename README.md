@@ -222,6 +222,36 @@ A hook for child components to access the store. It returns an object containing
 -   `store`: The Zustand store instance. You can subscribe to state slices with selector hooks (e.g., `store.use.myState()`).
 -   All functions from your `methods` object are spread onto the return value for direct access (e.g., `const { myMethod } = useBridgedStore()`).
 
+## Utilities
+
+You can also import utility functions directly from the `util` subpath:
+
+### `createSelectors(store)`
+
+A utility function that adds selector hooks to a Zustand store instance. This allows you to subscribe to specific state slices with `store.use.myState()` syntax.
+
+```typescript
+import { createSelectors } from 'hook-store-bridge/util'
+import { createStore } from 'zustand'
+
+const store = createStore<{ count: number }>(() => ({ count: 0 }))
+const storeWithSelectors = createSelectors(store)
+
+// Now you can use selector hooks
+const count = storeWithSelectors.use.count()
+```
+
+### `WithSelectors<S>`
+
+A TypeScript utility type that adds selector capabilities to a store type.
+
+```typescript
+import type { WithSelectors } from 'hook-store-bridge/util'
+import type { StoreApi } from 'zustand'
+
+type MyStore = WithSelectors<StoreApi<{ count: number }>>
+```
+
 ## Custom Store Configuration
 
 You can override the default Zustand setup by providing a `createStoreConfig` function. This is useful for adding middleware (like Redux DevTools) or integrating a different state library.
@@ -234,14 +264,15 @@ See the [source code](src/store.ts) for the default implementation and type defi
 import { createHookBridge } from 'hook-store-bridge'
 import { createStore } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import { createSelectors } from './utils' // Your internal selector utility
+import { createSelectors } from 'hook-store-bridge/util'
 import { useMyStoreLogic } from './useMyStoreLogic'
 
 export const { useBridgedStore, StoreProvider } = createHookBridge({
   useStoreLogic: useMyStoreLogic,
   createStoreConfig: () => ({
     createStore: (initState) => {
-      const store = createStore(devtools(() => initState, { name: 'MyStore' }))
+      const store = createStore<ReturnType<typeof useMyStoreLogic>['tracked']>()(
+        devtools(() => initState, { name: 'MyStore' }))
       return createSelectors(store)
     },
     updateState: (store, newState) => {

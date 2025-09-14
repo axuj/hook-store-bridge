@@ -17,11 +17,6 @@ jobs:
   build-and-publish:
     # 任务运行的虚拟机环境
     runs-on: ubuntu-latest
-
-    # 启用手动发布审批，需在 GitHub "Settings > Environments" 中配置。
-    # 此名称 ('npm-publish') 必须与 npm Provenance 设置中的环境名完全一致。
-    environment: npm-publish
-
     
     steps:
       # 检出仓库代码
@@ -44,6 +39,9 @@ jobs:
           node-version: '22.13.0'
           # 关键：为 pnpm 设置缓存
           cache: 'pnpm'
+          # 配置OIDC认证url
+          registry-url: 'https://registry.npmjs.org/'
+
 
       # 安装依赖
       - name: Install dependencies
@@ -68,9 +66,27 @@ jobs:
         run: pnpm build
 
 
+      - name: Update npm
+        run: npm install -g npm@latest
       # 发布到 npm
       - name: Publish to npm
-        run: pnpm publish --no-git-checks
+        id: publish_step # 给这一步一个ID，方便后面引用
+        run: npm publish --access public --no-git-checks
+        continue-on-error: true # 即使发布失败，也继续执行下一步来打印日志
+
+      # 如果发布失败，打印详细的 npm 调试日志
+      - name: Dump npm debug log on failure
+        if: steps.publish_step.outcome == 'failure' # 仅在上面一步失败时运行
+        run: |
+          echo "npm publish failed. Dumping debug log:"
+          # a-zA-Z0-9 是为了找到最新的日志文件
+          LOG_FILE=$(find /home/runner/.npm/_logs/ -type f -name "*Z-debug-*.log" | sort -r | head -n 1)
+          if [ -f "$LOG_FILE" ]; then
+            cat "$LOG_FILE"
+          else
+            echo "Debug log file not found."
+          fi
+          exit 1 # 打印完日志后，让整个 job 失败
 
       # 生成 changelog
       - run: pnpm dlx changelogithub --no-group
