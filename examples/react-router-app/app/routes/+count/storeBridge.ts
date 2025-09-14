@@ -1,6 +1,5 @@
 import { createHookBridge } from 'hook-store-bridge'
 import { useCounts } from './useCount'
-
 export const { useBridgedStore, StoreProvider } = createHookBridge({
   useStoreLogic: () => {
     const {
