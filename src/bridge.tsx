@@ -20,7 +20,7 @@ export type StoreLogicResult<StateType, MethodsType> = {
    * An object containing all the functions (actions, commands, etc.) for the store.
    * These do not trigger re-renders directly.
    */
-  methods?: MethodsType
+  methods: MethodsType
 }
 
 /**
@@ -75,8 +75,7 @@ export function createHookBridge<
     logicArgs?: Params
     children: React.ReactNode
   }) {
-    const { tracked: trackedState, methods = {} as MethodsType } =
-      useStoreLogic(...logicArgs)
+    const { tracked: trackedState, methods } = useStoreLogic(...logicArgs)
 
     const storeRef = useRef<TypeStoreContextValue | null>(null)
     if (storeRef.current === null) {

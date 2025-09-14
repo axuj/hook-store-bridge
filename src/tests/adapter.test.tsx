@@ -11,6 +11,7 @@ describe('createHookBridge', () => {
     const { useBridgedStore } = createHookBridge({
       useStoreLogic: () => ({
         tracked: { ...useMockHook() },
+        methods: {},
       }),
     })
 
