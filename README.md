@@ -2,7 +2,7 @@
 
 [![NPM version](https://img.shields.io/npm/v/hook-store-bridge.svg)](https://www.npmjs.com/package/hook-store-bridge)
 [![License](https://img.shields.io/npm/l/hook-store-bridge.svg)](./LICENSE)
-![hook-store-bridge demo showing performance improvement](assets/demo.webp)
+![hook-store-bridge demo showing performance improvement](assets/demo.gif)
 
 A utility that bridges a React logic hook with a performant state management store (like Zustand), solving state-sharing across components without the performance pitfalls of React Context.
 
