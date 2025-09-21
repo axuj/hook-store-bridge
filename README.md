@@ -56,21 +56,7 @@ First, create a custom hook that defines your store's logic. It must return a `{
 import { useState, useMemo, useCallback } from 'react'
 import type { StoreLogicResult, UseStoreLogic } from 'hook-store-bridge'
 
-type TrackedState = {
-  count: number
-}
-
-type Methods = {
-  increment: () => void
-  decrement: () => void
-}
-
-// Implement the hook following the UseStoreLogic signature
-export const useCounterLogic: UseStoreLogic<
-  [initialValue?: number],
-  TrackedState,
-  Methods
-> = (initialValue = 0) => {
+export const useCounterLogic = (initialValue = 0) => {
   const [count, setCount] = useState(initialValue)
 
   // 1. Define your methods using useCallback for stable references.
