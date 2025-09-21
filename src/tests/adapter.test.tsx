@@ -63,7 +63,7 @@ describe('createHookBridge', () => {
     expect(countElement.textContent).toBe('Count: 6')
   })
 
-  it('复杂入参', () => {
+  it('should handle complex parameters', () => {
     const useMockHook = (
       obj1: { count: number },
       obj2: { count: number },
@@ -115,7 +115,7 @@ describe('createHookBridge', () => {
     expect(obj1Element.textContent).toBe('Obj1 count: 5')
   })
 
-  it('不需要参数', () => {
+  it('should work without parameters', () => {
     const useMockHook = () => {
       return {
         test: true,
@@ -149,7 +149,7 @@ describe('createHookBridge', () => {
     expect(testElement.textContent).toBe('Test: true')
   })
 
-  it('action改变', () => {
+  it('should handle action changes', () => {
     const useMockHook = (initialValue: number) => {
       const [count, setCount] = useState(initialValue)
       const increment = useCallback(() => {
@@ -247,19 +247,19 @@ describe('createHookBridge', () => {
       'InitialValue: 5',
     )
 
-    // 点击按钮改变初始值
+    // Click the button to change the initial value
     act(() => {
       screen.getByText('Change Initial Value').click()
     })
 
-    // 验证状态是否更新
+    // Verify that the state is updated
     expect(screen.getByText(/Count:/).textContent).toBe('Count: 11')
     expect(screen.getByText(/InitialValue:/).textContent).toBe(
       'InitialValue: 10',
     )
   })
 
-  it('自定义store', () => {
+  it('should support custom store', () => {
     const useMockCounter = (initialValue: number) => {
       const [count, setCount] = useState(initialValue)
       return { count, setCount }

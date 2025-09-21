@@ -12,7 +12,7 @@ describe('Component Rendering and State Updates', () => {
     function reloadReaderList() {
       readerList = []
     }
-    // 创建一个简单的计数器 hook
+    // Create a simple counter hook
     const useCounter = ({
       count1InitialValue,
       count2InitialValue,
@@ -40,7 +40,7 @@ describe('Component Rendering and State Updates', () => {
       }
     }
 
-    // 使用 createHookBridge 创建适配器
+    // Create adapter using createHookBridge
     const { useBridgedStore, StoreProvider } = createHookBridge({
       useStoreLogic: ({
         count1InitialValue,
@@ -165,7 +165,7 @@ describe('Component Rendering and State Updates', () => {
       )
     }
 
-    // 渲染组件
+    // Render component
     render(
       <StoreProvider
         logicArgs={[
@@ -185,7 +185,7 @@ describe('Component Rendering and State Updates', () => {
       return screen.getByTestId(`CountComponent${id}-count-value`).textContent
     }
 
-    //初始状态
+    // Initial state
     for (let i = 1; i < 4; i++) {
       expect(getComponentCount(i)).toBe(`Count: ${i}`)
     }

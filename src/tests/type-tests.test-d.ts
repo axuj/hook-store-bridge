@@ -5,8 +5,8 @@ import { describe, expectTypeOf, it } from 'vitest'
 import { createStore, type StoreApi } from 'zustand'
 import { createHookBridge } from '../bridge'
 
-describe('createHookBridge 类型测试', () => {
-  it('useCounterStore 应该返回正确的类型', () => {
+describe('createHookBridge type tests', () => {
+  it('useCounterStore should return the correct type', () => {
     // 简单计数器 hook 类型测试
     const useCounter = (initial: number) => {
       return {
@@ -26,7 +26,7 @@ describe('createHookBridge 类型测试', () => {
       },
     })
 
-    expectTypeOf(useCounterStore).returns.toMatchTypeOf<{
+    expectTypeOf(useCounterStore).returns.toExtend<{
       store: {
         use: {
           count: () => number
@@ -39,7 +39,7 @@ describe('createHookBridge 类型测试', () => {
     expectTypeOf(store).not.toBeAny()
   })
 
-  it('CounterProvider 应该接受正确的 props 类型', () => {
+  it('CounterProvider should accept correct props type', () => {
     // 简单计数器 hook 类型测试
     const useCounter = (initial: number) => {
       return {
@@ -59,13 +59,13 @@ describe('createHookBridge 类型测试', () => {
       },
     })
 
-    expectTypeOf(CounterProvider).parameter(0).toMatchTypeOf<{
+    expectTypeOf(CounterProvider).parameter(0).toExtend<{
       logicArgs?: [number]
       children: any
     }>()
   })
 
-  it('useComplexStore 应该返回正确的类型', () => {
+  it('useComplexStore should return correct type', () => {
     // 复杂对象 hook 类型测试
     const useComplexHook = (config: { initialCount: number; name: string }) => {
       return {
@@ -90,7 +90,7 @@ describe('createHookBridge 类型测试', () => {
       },
     })
 
-    expectTypeOf(useComplexStore).returns.toMatchTypeOf<{
+    expectTypeOf(useComplexStore).returns.toExtend<{
       store: {
         use: {
           count: () => number
@@ -105,7 +105,7 @@ describe('createHookBridge 类型测试', () => {
     }>()
   })
 
-  it('ComplexProvider 应该接受正确的 props 类型', () => {
+  it('ComplexProvider should accept correct props type', () => {
     // 复杂对象 hook 类型测试
     const useComplexHook = (config: { initialCount: number; name: string }) => {
       return {
@@ -130,12 +130,12 @@ describe('createHookBridge 类型测试', () => {
       },
     })
 
-    expectTypeOf(ComplexProvider).parameter(0).toMatchTypeOf<{
+    expectTypeOf(ComplexProvider).parameter(0).toMatchObjectType<{
       logicArgs?: [{ initialCount: number; name: string }]
     }>()
   })
 
-  it('自定义创建 store 函数', () => {
+  it('custom store creation function', () => {
     const useMockCounter = (initialValue: number) => {
       const [count, setCount] = useState(initialValue)
       return { count, setCount }
@@ -170,7 +170,7 @@ describe('createHookBridge 类型测试', () => {
       }),
     })
 
-    expectTypeOf(useBridgedStore).returns.toMatchTypeOf<{
+    expectTypeOf(useBridgedStore).returns.toMatchObjectType<{
       store: StoreApi<
         State & {
           count1: number
