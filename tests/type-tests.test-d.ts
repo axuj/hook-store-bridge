@@ -1,9 +1,9 @@
 /** biome-ignore-all lint/correctness/noUnusedFunctionParameters: test-file */
 
 import { type Dispatch, useState } from 'react'
+import { createHookBridge } from 'src/bridge'
 import { describe, expectTypeOf, it } from 'vitest'
 import { createStore, type StoreApi } from 'zustand'
-import { createHookBridge } from '../bridge'
 
 describe('createHookBridge type tests', () => {
   it('useCounterStore should return the correct type', () => {

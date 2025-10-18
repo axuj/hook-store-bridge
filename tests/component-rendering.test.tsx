@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { act, useEffect, useState } from 'react'
+import { createHookBridge } from 'src/bridge'
 import { describe, expect, it } from 'vitest'
-import { createHookBridge } from '../bridge'
 
 describe('Component Rendering and State Updates', () => {
   it('should render components with correct initial state and update independently', () => {

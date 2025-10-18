@@ -1,9 +1,9 @@
 import { render, renderHook, screen } from '@testing-library/react'
 import { act, useCallback, useState } from 'react'
+import { createHookBridge } from 'src/bridge'
 import { describe, expect, it } from 'vitest'
 import { createStore, useStore } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import { createHookBridge } from '../bridge'
 
 describe('createHookBridge', () => {
   it('should throw an error if useAdaptedStore is used without a Provider', () => {
